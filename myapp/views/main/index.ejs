@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<body>
+<!--<div id="app2" v-cloak>
+
+    <div v-if="page==0">
+        用户名：<input type="text" v-model="username">-${username}-${page}
+        密码： <input type="text" v-model="pwd" >
+        <button @click="login">登录</button>
+        <button @click="registerPage">马上注册</button>
+    </div>
+    <div v-if="page==1">
+        <h1>注册</h1>
+        用户名：<input type="text" v-model="username">
+        密码： <input type="text" v-model="pwd">
+        确认密码： <input type="text" v-model="pwd2">
+        <button @click="register">注册</button>
+    </div>
+    <div v-if="page==2">
+        <h1 style="color:red" class="bg">${message}</h1>
+
+    </div>
+</div>-->
+<div id="app2" v-cloak>
+    {% if userInfo._id%}
+    <div>
+        <h1 style="color:red" class="bg">{{userInfo.username}}，您好，欢迎您 </h1>
+        <button @click="logout">退出</button>
+    </div>
+    {% else %}
+    <div v-if="page==0">
+        <h1>登录</h1>
+        用户名：<input type="text" v-model="username">
+        密码： <input type="text" v-model="pwd">
+        <button @click="login">登录</button>
+        <button @click="registerPage">马上注册</button>
+    </div>
+    <div v-if="page==1">
+        <h1>注册</h1>
+        用户名：<input type="text" v-model="username">
+        密码： <input type="text" v-model="pwd">
+        确认密码： <input type="text" v-model="pwd2">
+        <button @click="register">注册</button>
+    </div>
+    {% endif %}
+
+</div>
+
+
+</body>
+<script src="jquery-1.11.3.js"></script>
+<script src="vue.js"></script>
+<script>
+    new Vue({
+        delimiters: ['${', '}'],
+        el: '#app2',
+        data:{
+            username: '123',
+            pwd: '',
+            page: 0,
+        },
+        mounted: function () {
+
+        },
+        methods:{
+            login: function () {
+                var _this = this;
+                $.ajax({
+                    type: 'post',
+                    url: "/api/user/login",
+                    dataType:'json',
+                    data: {username: this.username, password: this.pwd},
+                    success: function (result) {
+                        _this.page = 2;
+
+                    }
+                })
+            },
+            registerPage:function () {
+                this.page = 1;
+                this.pwd=this.pwd2='';
+            },
+            register: function () {
+                var _this = this;
+/*                if(this.pwd!=this.pwd2){
+                    alert("密码不一致!")
+                    this.pwd=this.pwd2=''
+                    return;
+                }
+                this.page = 1;*/
+                $.ajax({
+                    type: 'post',
+                    url: "/api/user/register",
+                    dataType:'json',
+                    data: {username: this.username, password: this.pwd},
+                    success: function (result) {
+                        _this.page = 0;
+                    }
+                });
+            },
+            logout: function () {
+                $.ajax({
+                    type: 'post',
+                    url: "/api/user/logout",
+                    success: function (result) {
+                        if (!result.code) {
+                            alert(result.message)
+                            window.location.reload();
+                        }
+                    }
+                });
+            },
+        }
+
+    });
+
+</script>
+</html>
